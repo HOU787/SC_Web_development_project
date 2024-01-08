@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.skyscrapper.mapper.AdminMapper">
+   <!-- Inquiry Admin -->
+   
+   <!-- Pending Inquriry 목록 -->
+   <select id="selectPendingInq" resultType="Inquiry" parameterType="map">
+   SELECT
+       inq_id
+      , snd_id
+      , rcv_id
+      , product_id
+      , to_char(input_date, 'YY/MM/DD') as input_date
+      , message
+      , block_status
+      , pending_status
+   FROM
+      inquiry
+   WHERE
+      pending_status = 1
+      AND
+      block_status = 0
+   </select>
+   
+   <!-- pending 상태의 인콰이어리 block으로 넘기기 -->
+   <update id="deleteInq" parameterType="int">
+   UPDATE inquiry
+   SET
+         block_status = 1
+   WHERE
+      pending_status = 1
+      AND
+        inq_id = #{inq_id}
+   </update>
+   
+   <!-- pending 상태의 인콰이어리 수정(1 > 0) -->
+   <update id="updateInq" parameterType="int">
+   UPDATE inquiry
+   SET
+         pending_status = 0
+   WHERE
+        inq_id = #{inq_id}
+   </update>
+   
+   
+   <!-- Product Admin -->
+   
+   <!-- Pending Product 목록 -->
+   <select id="selectPendingPro" resultType="Product" parameterType="map">
+   SELECT
+       product_id
+      , member_id
+      , product_nm
+      , product_info
+      , to_char(regdate, 'YY/MM/DD') as regdate
+      , block_status
+      , pending_status
+   FROM
+      product
+   WHERE
+      pending_status = 1
+      AND
+      block_status = 0
+   </select>
+   
+   <!-- pending 상태의 인콰이어리 block으로 넘기기 -->
+   <update id="deletePro" parameterType="int">
+   UPDATE product
+   SET
+      block_status = 1
+   WHERE
+      pending_status = 1
+      AND
+        product_id = #{product_id}
+   </update>
+   
+   <!-- pending 상태의 인콰이어리 수정(1 > 0) -->
+   <update id="updatePro" parameterType="int">
+   UPDATE product
+   SET
+        pending_status = 0
+   WHERE
+        product_id = #{product_id}
+   </update>
+   
+</mapper>

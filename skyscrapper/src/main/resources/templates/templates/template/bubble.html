@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- jquery -->
+  <script th:src="@{/script/jquery-3.7.0.js}"></script>
+  <!-- Chart.js 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('myChart');
+
+    $.ajax({
+      url: 'bubble',
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        const inputData = data;
+
+        const datasets = inputData.map(item => ({
+          x: item.count1, // y축 데이터를 x로 설정
+          y: -item.count0, // x축 데이터를 y로 설정하고 음수로 변경
+          r: Math.sqrt(item.count0 * item.count1),
+          companyName: item.companyName,
+        }));
+
+        const maxRadius = Math.max(...datasets.map(item => item.r));
+
+        const scaleFactor = 50 / maxRadius;
+        const maxAllowedRadius = 50;
+
+        const normalizedDatasets = datasets.map(item => ({
+          x: item.x,
+          y: item.y,
+          r: Math.min(item.r * scaleFactor, maxAllowedRadius),
+          companyName: item.companyName,
+        }));
+
+        const chartData = {
+          datasets: normalizedDatasets.map((item, index) => ({
+            label: item.companyName,
+            data: [{ x: item.x, y: item.y, r: item.r }],
+            backgroundColor: getRandomPastelColor(index),
+            borderColor: 'rgba(0, 0, 0, 0)',
+            borderWidth: 0,
+          }))
+        };
+
+        new Chart(ctx, {
+          type: 'bubble',
+          data: chartData,
+          options: {
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  title: function () {
+                    return '';
+                  },
+                  label: function (context) {
+                    var datasetLabel = '';
+                    var companyName = context.dataset.label || '';
+                    var data = context.dataset.data[context.dataIndex];
+                    return datasetLabel + ': (' + data.x + ', ' + data.y + ', ' + data.r + ') - ' + companyName;
+                  }
+                }
+              }
+            },
+
+            elements: {
+              point: {
+                radius: function (context) {
+                  return context.dataset.data[context.dataIndex].r;
+                },
+                hoverRadius: function (context) {
+                  return context.dataset.data[context.dataIndex].r + 2;
+                },
+                hitRadius: 10,
+                borderWidth: 0,
+                backgroundColor: function (context) {
+                  return context.dataset.backgroundColor;
+                },
+                hoverBackgroundColor: function (context) {
+                  return context.dataset.backgroundColor;
+                },
+                pointStyle: 'circle'
+              }
+            }
+          }
+        });
+      }
+    });
+
+    function getRandomPastelColor(index) {
+      const hue = (index * 57) % 360; // 인덱스를 이용해 고유한 색상을 생성
+      const pastelColor = 'hsl(' + hue + ', 70%, 80%)';
+      return pastelColor;
+    }
+  </script>
+</body>
+
+</html>

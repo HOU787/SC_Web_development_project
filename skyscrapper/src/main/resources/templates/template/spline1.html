@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-cartesian.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        html, body, #container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+    anychart.onDocumentReady(function () {
+        $.ajax({
+            url: 'spline1',
+            method: 'get',
+            success: function(data) {
+                // Process the received data and create the chart
+                var chartData = []; // Array to store the chart data
+
+                // Iterate over the received data and format it for the chart
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    chartData.push({ x: item.yr, value: item.starRate });
+                }
+
+                // Create a chart
+                var chart = anychart.line();
+
+                // Create a spline series and set the data
+                var series = chart.spline(chartData);
+
+                // Set the chart title
+                chart.title("Star-rating graph");
+
+                // Set the titles of the axes
+                var xAxis = chart.xAxis();
+                xAxis.title("Year");
+                var yAxis = chart.yAxis();
+                yAxis.title("Rating");
+
+                // Set the container id
+                chart.container("container");
+
+                // Initiate drawing the chart
+                chart.draw();
+            },
+            passive: true
+        });
+    });
+    </script>
+</body>
+</html>

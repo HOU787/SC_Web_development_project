@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.skyscrapper.mapper.ChartMapper">
+
+	<select id="getSentimentCount" parameterType="map" resultType="SentimentCount">
+		SELECT brand_name as companyName, 
+		       COUNT(CASE WHEN sentiment_score = 0 THEN 1 END) AS count0,
+		       COUNT(CASE WHEN sentiment_score = 1 THEN 1 END) AS count1
+		FROM reply_product
+	    WHERE
+	        1 = 1
+	        <if test="fromDate != null and toDate != null">
+	            AND regdate BETWEEN #{fromDate} AND #{toDate}
+	        </if>
+	        <if test="fromDate == null or toDate == null">
+	            AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+	        </if>
+		GROUP BY brand_name
+		order by brand_name
+	</select>
+
+	<select id="getReviewCount" parameterType="map" resultType="ReviewCount">
+		select
+			brand_name as companyNn,
+			count(*) as reviewCnt
+		from 
+			reply_product
+	    WHERE
+	        1 = 1
+	        <if test="fromDate != null and toDate != null">
+	            AND regdate BETWEEN #{fromDate} AND #{toDate}
+	        </if>
+	        <if test="fromDate == null or toDate == null">
+	            AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+	        </if>
+		group by
+			brand_name
+	</select>
+
+	<select id="getSentimentRate" parameterType="map" resultType="SentimentRate">
+		SELECT company, rate
+		FROM (
+		    SELECT brand_name AS company, rate,
+		        ROW_NUMBER() OVER (ORDER BY rate DESC) AS row_num
+		    FROM (
+		        SELECT brand_name, sentiment_score,
+		            (COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY brand_name) * 100) AS rate
+		        FROM reply_product
+		        WHERE
+		            <if test="fromDate != null and toDate != null">
+		                regdate BETWEEN #{fromDate} AND #{toDate}
+		            </if>
+		            <if test="fromDate == null or toDate == null">
+		                AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+		            </if>
+		        GROUP BY brand_name, sentiment_score
+		    )
+		    WHERE sentiment_score = 1
+		)
+		WHERE row_num &lt; 6
+	</select>
+
+	<select id="getStarRate" parameterType="map" resultType="StarRate">
+		select
+			extract(year from regdate) as yr,
+			avg(rating) as starRate
+		from
+			reply_product
+		WHERE
+	        <if test="fromDate != null and toDate != null">
+	            regdate BETWEEN #{fromDate} AND #{toDate}
+	        </if>
+	        <if test="fromDate == null or toDate == null">
+	            AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+	        </if>
+		group by
+			extract(year from regdate)
+		order by yr
+	</select>
+
+	<select id="getSales" parameterType="map" resultType="Sales">
+		select
+			extract(year from regdate) as reviewYr,
+			count(*) as reviews
+		from
+			reply_product
+		WHERE
+	        <if test="fromDate != null and toDate != null">
+	            regdate BETWEEN #{fromDate} AND #{toDate}
+	        </if>
+	        <if test="fromDate == null or toDate == null">
+	            AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+	        </if>
+		group by
+			extract(year from regdate)
+        order by 
+            reviewYr
+	</select>
+
+	<select id="getSalesByBrands" parameterType="map" resultType="SalesByBrands">
+		SELECT extract(year from regdate) as salesYr,
+        	brand_name as brand,
+        	count(*) as sales
+		FROM reply_product
+		WHERE
+	        <if test="fromDate != null and toDate != null">
+	            regdate BETWEEN #{fromDate} AND #{toDate}
+	        </if>
+	        <if test="fromDate == null or toDate == null">
+	            AND regdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+	        </if>
+		GROUP BY
+			brand_name, extract(year from regdate)
+		order by
+			salesYr
+	</select>
+</mapper>

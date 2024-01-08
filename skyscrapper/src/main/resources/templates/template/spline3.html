@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-core.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-cartesian.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      height: 700px;
+    }
+  </style>
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script>
+    anychart.onDocumentReady(function() {
+      // Create a chart
+      var chart = anychart.line();
+
+      // Create a container for the legend
+      var legend = chart.legend();
+      legend.title("Brands"); // Set the legend title
+
+      $.ajax({
+        url: 'spline3',
+        method: 'get',
+        success: function(data) {
+          // Iterate over the data and create a series for each brand
+          var brands = [];
+          for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            if (!brands.includes(item.brand)) {
+              brands.push(item.brand);
+              var filteredData = data.filter(function(d) {
+                return d.brand === item.brand;
+              }).map(function(d) {
+                return {
+                  x: d.salesYr,
+                  value: d.sales
+                };
+              });
+              var series = chart.line(filteredData);
+              series.name(item.brand);
+
+              // Configure tooltip for each series
+              var tooltip = series.tooltip();
+              tooltip.title().text(item.brand); // Set the tooltip title as the brand
+              tooltip.format("{%x}: {%value}"); // Set the tooltip format for x (year) and value (sales)
+            }
+          }
+
+          // Set the chart title
+          chart.title("Sales trend by year");
+
+          // Set the titles of the axes
+          var xAxis = chart.xAxis();
+          xAxis.title("Year");
+          var yAxis = chart.yAxis();
+          yAxis.title("Sales");
+
+          // Set the container id
+          chart.container("container");
+
+          // Configure the legend
+          chart.legend()
+            .enabled(true) // Enable the legend
+            .position("right") // Position the legend at the top
+            .itemsLayout("vertical") // Display legend items vertically
+            .align("right") // Right-align the legend items
+            .itemsSpacing(10) // Add spacing between legend items
+            .padding([0, 50, 150, 0]); // Add padding to the legend (top, right, bottom, left)
+
+          // Initiate drawing the chart
+          chart.draw();
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

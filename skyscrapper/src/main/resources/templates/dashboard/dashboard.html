@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+
+<!-- 부트스트랩 -->
+<!-- Latest compiled and minified CSS -->
+<link
+   href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+   rel="stylesheet">
+   
+<!-- Latest compiled JavaScript -->
+<script
+   src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-cartesian.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+
+<!-- 외부CSS -->
+<link rel="stylesheet" th:href="@{/style/main.css}">
+<link rel="stylesheet" th:href="@{/style/dashboard.css}">
+
+<!-- 외부JS -->
+<script defer th:src="@{/script/main.js}"></script>
+<script defer th:src="@{/script/dashboard.js}"></script>
+<script>
+window.addEventListener('scroll', function() {
+    var category = document.querySelector('div.category');
+    var ul = category.querySelector('ul');
+    var headerHeight = document.querySelector('.header').offsetHeight;
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (scrollTop > headerHeight) {
+        ul.style.transform = 'translateY(' + (scrollTop - headerHeight) + 'px)';
+    } else {
+        ul.style.transform = 'translateY(0)';
+    }
+});
+</script>
+<title>Document</title>
+</head>
+
+<body>
+	<div class="container">
+		<div class="welcome">
+			<a sec:authorize="not isAuthenticated()" th:href="@{/member/signin}" id="login" class="hi btn">
+				Welcome &nbsp; to &nbsp; Skyscrapper
+			</a>
+			<a sec:authorize="isAuthenticated()" th:href="@{/member/mypage}" id="mypage" class="hi btn">
+				Hello! &nbsp; [[${#authentication.name}]]
+			</a>
+		</div>
+        <div class="header">
+            <div class="logo">
+                <a th:href="@{/}" class="btn">
+                    <img th:src="@{/images/logo.png}" alt="로고">
+                </a>
+            </div><!-- end.logo -->
+            <div class="search">
+                <form id="pagingForm" th:action="@{/category/listbidet}" method="GET">
+                    <input type="hidden" name="currentPage" id="currentPage" value="">
+                    <select name="searchItem">
+                        <option value="product_nm" th:selected="${searchItem == 'product_nm'}">Product</option>
+                        <option value="product_info" th:selected="${searchItem == 'product_info'}">Details</option>
+                        <option value="member_id" th:selected="${searchItem == 'member_id'}">Seller</option>
+                    </select>
+                    <input type="text" name="searchWord" th:value="${searchWord}"
+                        placeholder="What are you looking for?">
+                    <a th:href="@{/}" class="btn">
+                        <img th:src="@{/images/search2.png}" alt="검색" style="width:40px;">
+                        <input type="submit" class="btn" style="display: none;">
+                    </a>
+                </form>
+            </div>
+            <!-- end.search -->
+
+            <div class="member">
+                <!-- 인증이 안된 사람 -->
+                <a sec:authorize="not isAuthenticated()" th:href="@{/member/signin}" id="signin" class="btn">login</a>
+                <span sec:authorize="not isAuthenticated()">|</span>
+                <a sec:authorize="not isAuthenticated()" th:href="@{/member/signup}" id="signup" class="btn">singup</a>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/logout}" id="logout" class="btn">logout</a>
+                <span sec:authorize="isAuthenticated()">|</span>
+                <a sec:authorize="isAuthenticated()" th:href="@{/member/cart}" id="cart" class="btn">cart</a>
+            </div><!-- end.member -->
+
+        </div><!-- end.header -->
+
+
+        <div class="middle">
+	    	<div class="category">
+	        	<ul>
+	            	<li style="font:NanumSquareNeoHeavy;font-weight:bolder;">
+	            		<a href="#">Bathroom</a></li>
+	            	<li class="c bidet"><a th:href="@{/db}" class="c">
+						<img th:src="@{/images/bidet.png}">Bidet</a></li>
+	           		<li class="c"><a href="#" class="c">
+	                	<img th:src="@{/images/faucet.png}">Faucet</a></li>
+	             	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/shower.png}">Shower</a></li>
+	            	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/bathtub.png}">Bathtub</a></li>
+	            	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/dryer.png}">Dryer</a></li>
+	            	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/towel.png}">Towel</a></li>
+	            	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/shampoo.png}">Shampoo</a></li>
+	            	<li class="c"><a href="#" class="c">
+	               		<img th:src="@{/images/cabinet.png}">Cabient</a></li>
+	         	</ul>
+			</div> <!-- end.category -->
+
+
+            <div class="contents">
+            	<div class="btnGroup">
+                	<ul class="menu_wrap" role="tablist">
+                    	<li class="menu_item" role="presentation">
+                        	<a th:href="@{/db}" id="dashboard" class="menu_id on" role="tab" aria-selected="true">
+                            	<span class="dash_text"><span class="text">DASHBOARD</span></span>
+                            </a>
+                        </li>
+                        <li class="menu_item" role="presentation">
+                        	<a th:href="@{/category/listbidet}" id="shop" class="menu_id" role="tab" aria-selected="false">
+                            	<span class="shop_text"><span class="text">SHOPPING</span></span>
+                            </a>
+                        </li>
+					</ul>
+              	</div><!-- end.btnGroup -->
+
+                <div class="back">
+                   <!-- 기간 설정 -->
+                   <div class="period">
+	                   <a th:href="@{/category/keywords}"><button>By Brands</button></a>
+	                      <label>
+	                         <a>From</a>
+	                         <input type="date" class="date" id="fromDate" onchange="showCharts()">
+	                         &nbsp;
+	                         <a> To</a>
+	                         <input type="date" class="date" id="toDate" th:max="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" onchange="showCharts()"> 
+	                      </label>
+	                      <!-- 
+	                      <button onclick="getBarChart(), radarChart(), spline1(), bubbleChart(), spline2()">Show Chart</button>
+	                       -->
+                   </div>
+                   <script>
+					   window.onload = function() {
+					      var fromDateElement = document.getElementById("fromDate");
+					      var toDateElement = document.getElementById("toDate");
+					      
+					      var today = new Date();
+					      var oneYearAgo = new Date(today.getFullYear() - 14, today.getMonth(), today.getDate());
+					      
+					      fromDateElement.value = formatDate(oneYearAgo);
+					      
+					      // 필요한 경우 toDate 요소도 설정할 수 있습니다.
+					      // toDateElement.value = formatDate(today);
+					   }
+					   
+					   function formatDate(date) {
+					      var year = date.getFullYear();
+					      var month = ("0" + (date.getMonth() + 1)).slice(-2);
+					      var day = ("0" + date.getDate()).slice(-2);
+					      
+					      return year + "-" + month + "-" + day;
+					   }
+				   </script>
+                   
+                   <!-- 차트 -->
+                   <div class="allChart">
+                       <!-- bar -->
+                       <div class="chart-container" id="container1">
+                       	   <!-- 제목 -->
+                           <p class="title">Total number of reviews by brand</p>
+                       </div><!-- end#container1 -->
+
+                       <!-- radar -->
+                       <div class="chart-container" id="container2">
+                           <!-- 제목 -->
+                           <p class="title">Positive Sentiment Rate</p>
+                           <span id="anychart-embed-samples-bct-radar-area-chart"
+                           	   class="anychart-embed anychart-embed-samples-bct-radar-area-chart"></span>
+                           <script
+                               src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+                           <script
+                               src="https://cdn.anychart.com/releases/8.11.1/js/anychart-radar.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+                           <script
+                               src="https://cdn.anychart.com/releases/8.11.1/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+                           <script
+                               src="https://cdn.anychart.com/releases/8.11.1/js/anychart-ui.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+                           <div id="ac_style_samples-bct-radar-area-chart" style="display:none;">
+                               html, body, #container {
+                               width: 100%;
+                               height: 100%;
+                               margin: 0;
+                               padding: 0;
+                               }
+                           </div>
+                       </div><!-- end#container2 -->
+						
+                       <!--spline1 -->
+                       <div class="chart-container" id="container3">
+                           <p class="title">Star-Rating Graph</p>
+                       </div><!-- end#container3 -->
+
+                       <!-- bubble -->
+                       <div class="chart-container" id="bubble_container">
+                           <p class="title">Sentiment Distribution</p>
+                           <div id="div_myAreaChart">
+                               <canvas id="myChart" style="width: 400px; height: 450px;"></canvas>
+                           </div>
+                       </div><!-- end.chart_container -->
+
+                       <!-- spline2 -->
+                       <div class="chart-container" id="container4">
+                           <p class="title">Sales Trend by Year</p>
+                       </div><!-- end#container4 -->
+
+					   <!-- spline3 -->
+	                   <div class="chart-container" id="container5">
+	                       <p class="title">Brands' Sale trends by Year</p>
+	                   </div><!-- end#container5 -->
+
+					</div><!-- end.allChart -->
+					</div>
+
+				</div><!-- end.back-->
+			</div><!-- end.contents -->
+		</div><!-- end.middle -->
+	</div><!-- end.container -->
+</body>
+</html>

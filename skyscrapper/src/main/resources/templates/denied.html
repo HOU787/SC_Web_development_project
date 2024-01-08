@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 거부</title>
+</head>
+<body>
+<form id="denied" th:action="@{/denied}" method="POST">
+    <h1>접근권한이 없습니다.</h1>
+    <hr>
+    <span>
+    <a th:href="@{/}" id="mainpage" class="btn">메인페이지로 이동</a>
+    </span>
+</form>
+</body>
+</html>

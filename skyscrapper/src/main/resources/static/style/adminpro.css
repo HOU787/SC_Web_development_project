@@ -1,0 +1,66 @@
+@charset "UTF-8";
+
+div.category > ul > li.product > a {
+   background-color:rgb(188, 159, 255);
+   color:#ECF2FF;
+   border-radius:5px;
+}
+
+div.container {
+	margin-bottom: 30px;
+}
+
+#pendingProForm {
+   background-color: #f2f2f2;
+   border-radius: 0 50px 50px 0;
+   border : solid 3px rgb(188, 159, 255);
+   border-left: none;
+   padding: 20px 15px 20px 20px;
+}
+
+
+table {
+   display: inline-block;
+   margin-top: 20px;
+   margin : 20px 10px 10px 0;
+   border-radius: 30px;
+   overflow: hidden;
+}
+
+tr {
+   border-bottom: 1px solid lightgray;
+}
+
+tr.standard {
+	background-color:rgb(210, 210, 210);
+	border-radius: 20px;
+	font-size: 20px;
+	text-align: center;
+}
+
+th {
+   padding : 20px 20px;
+   text-align: center;
+}
+
+td {
+   font-size: 0.8em;
+   margin: 5px;
+   width : 645px;
+   padding : 2px 20px 2px 20px;
+   text-align: center;
+}
+
+td.info {
+   padding-top: 10px;
+   padding-bottom: 25px;
+   text-align: left;
+}
+
+
+td > a.btn {
+   margin-right : 5px;
+   margin : 5px;
+   width:100px;
+}
+

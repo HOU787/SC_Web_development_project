@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="anychart-embed-samples-bct-radar-area-chart" class="anychart-embed anychart-embed-samples-bct-radar-area-chart">
+        <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+        <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-radar.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+        <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+        <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-ui.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+        <div id="ac_style_samples-bct-radar-area-chart" style="display:none;">
+            html, body, #container {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        </div>
+        <script>
+            (function () {
+                function ac_add_to_head(el) {
+                    var head = document.getElementsByTagName('head')[0];
+                    head.insertBefore(el, head.firstChild);
+                }
+                function ac_add_link(url) {
+                    var el = document.createElement('link');
+                    el.rel = 'stylesheet'; el.type = 'text/css'; el.media = 'all'; el.href = url;
+                    ac_add_to_head(el);
+                }
+                function ac_add_style(css) {
+                    var ac_style = document.createElement('style');
+                    if (ac_style.styleSheet) ac_style.styleSheet.cssText = css;
+                    else ac_style.appendChild(document.createTextNode(css));
+                    ac_add_to_head(ac_style);
+                }
+                ac_add_link('https://cdn.anychart.com/releases/8.11.1/css/anychart-ui.min.css?hcode=a0c21fc77e1449cc86299c5faa067dc4');
+                ac_add_style(document.getElementById("ac_style_samples-bct-radar-area-chart").innerHTML);
+                ac_add_style(".anychart-embed-samples-bct-radar-area-chart{width:600px;height:450px;}");
+            })();
+
+            anychart.onDocumentReady(function () {
+                $.ajax({
+                    url: 'radar',
+                    method: 'get',
+                    success: function(data) {
+                        // Process the received data and create the chart data array
+                        var chartData = [];
+
+                        // Iterate over the received data and format it for the chart
+                        for (var i = 0; i < data.length; i++) {
+                            var item = data[i];
+                            chartData.push({ x: item.company, value: item.rate });
+                        }
+
+                        // create a chart
+                        var chart = anychart.radar();
+
+                        // create an area series and set the data
+                        var series = chart.area(chartData);
+
+                        // set the chart title
+                        chart.title("Positive Sentiment Rate");
+
+                        // set the container id
+                        chart.container("container");
+
+                        // initiate drawing the chart
+                        chart.draw();
+                    }
+                });
+            });
+        </script>
+        <div id="container"></div>
+    </div>
+</body>
+</html>

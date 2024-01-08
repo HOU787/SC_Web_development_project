@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.skyscrapper.mapper.InquiryMapper">
+   <insert id="sendInquiry" parameterType="Inquiry">
+   INSERT INTO inquiry
+      ( inq_id
+      , snd_id
+      , rcv_id
+      , product_id
+      , message
+      , block_status
+      , pending_status)
+   VALUES
+      ( inquiry_seq.NEXTVAL
+      , #{snd_id}
+      , #{rcv_id}
+      , #{product_id}
+      , #{message}
+      , #{block_status}
+      , #{pending_status})
+   </insert>
+   
+   <update id="updateInquiryPendingStatus" parameterType="net.kdigital.skyscrapper.domain.Inquiry">
+       UPDATE inquiry
+       SET pending_status = #{pending_status}
+       WHERE inq_id = #{inq_id}
+   </update>
+</mapper>

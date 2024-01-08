@@ -1,0 +1,52 @@
+<!-- chart.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="brand-rating-chart" width="400" height="400"></canvas>
+    <canvas id="product-average-rating-chart" width="400" height="400"></canvas>
+    <canvas id="hourly-average-rating-chart" width="400" height="400"></canvas>
+
+    <script>
+        function fetchData(url, chartId, labelKey, dataKey) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item[labelKey]);
+                    const values = data.map(item => item[dataKey]);
+
+                    const ctx = document.getElementById(chartId).getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: dataKey,
+                                data: values,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        fetchData('/brand-rating-by-date-range', 'brand-rating-chart', 'brandName', 'totalRating');
+        fetchData('/product-average-rating-by-brand-and-date-range?brandName=your_brand_name', 'product-average-rating-chart', 'productName', 'averageRating');
+        fetchData('/hourly-average-rating-by-brand-product-and-date-range?brandName=your_brand_name&productName=your_product_name', 'hourly-average-rating-chart', 'hour', 'averageRating');
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.kdigital.skyscrapper.mapper.KeywordMapper">
+
+	<select id="getBarReviewCount" parameterType="String" resultType="ReviewCount">
+		select
+			product_name as companyNn,
+			count(*) as reviewCnt
+		from 
+			reply_product
+	    WHERE
+	    	<if test="brand_name!= null">
+			brand_name=#{brand_name}
+			</if>
+	    	
+	        <if test="brand_name == null">
+			brand_name='a_s'
+			</if>
+		group by
+			brand_name, 
+			product_name
+	</select>
+	
+	<select id="getPieMarketShare" parameterType="String" resultType="ReviewCount">
+		select
+			product_name as companyNn,
+			count(*) as reviewCnt
+		from 
+			reply_product
+	    WHERE
+	    	<if test="brand_name!= null">
+			brand_name=#{brand_name}
+			</if>
+	    	
+	        <if test="brand_name == null">
+			brand_name='a_s'
+			</if>
+		group by
+			brand_name, 
+			product_name
+	</select>
+	
+	<select id="getRadarSentiment" parameterType="String" resultType="SentimentRate">
+		SELECT company, rate
+		FROM (
+		    SELECT product_name AS company, rate,
+		        ROW_NUMBER() OVER (ORDER BY rate DESC) AS row_num
+		    FROM (
+		        SELECT product_name, sentiment_score,
+		            (COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY product_name) * 100) AS rate
+		        FROM reply_product
+		        WHERE
+			    	<if test="brand_name!= null">
+						brand_name=#{brand_name}
+					</if>
+			    	
+			        <if test="brand_name == null">
+						brand_name='a_s'
+					</if>
+		        GROUP BY product_name, sentiment_score
+		    )
+		    WHERE sentiment_score = 1
+		)
+		WHERE row_num &lt; 6
+	</select>
+	
+	<select id="getBubbleSentiment" parameterType="String" resultType="SentimentCount">
+		SELECT product_name as companyName, 
+		       COUNT(CASE WHEN sentiment_score = 0 THEN 1 END) AS count0,
+		       COUNT(CASE WHEN sentiment_score = 1 THEN 1 END) AS count1
+		FROM reply_product
+	    WHERE
+	    	<if test="brand_name!= null">
+				brand_name=#{brand_name}
+			</if>
+	    	
+	        <if test="brand_name == null">
+				brand_name='a_s'
+			</if>
+		GROUP BY product_name
+		order by product_name
+	</select>
+
+</mapper>

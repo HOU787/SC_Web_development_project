@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>admin</title>
+
+<!-- 부트스트랩 -->
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- 외부CSS -->
+<link rel="stylesheet" th:href="@{/style/admin.css}">
+<!-- 외부JS -->
+<script defer th:src="@{/script/main.js}"></script>
+
+</head>
+
+<body>
+   <div class="container"> <!-- 부트스트랩의 container -->
+      <div class="welcome">
+         <a sec:authorize="not isAuthenticated()" th:href="@{/member/signin}" id="login" class="hi btn">
+            Welcome &nbsp; to &nbsp; Skyscrapper
+         </a>
+         <a sec:authorize="isAuthenticated()" th:href="@{/member/mypage}" id="mypage" class="hi btn">
+            Admin &nbsp; | &nbsp; [[${#authentication.name}]]
+         </a>
+      </div>
+      <div class="header">
+         <div class="logo">
+            <a th:href="@{/admin}" class="btn">
+               <img th:src="@{/images/logo.png}" alt="로고">
+            </a>
+         </div><!-- end.logo -->
+         <div class="search">
+            <form id="pagingForm" th:action="@{/category/listbidet}" method="GET">
+               <input type="hidden" name="currentPage" id="currentPage" value="">
+               <select name="searchItem">
+                  <option value="product_nm" th:selected="${searchItem == 'product_nm'}">Product</option>
+                  <option value="product_info" th:selected="${searchItem == 'product_info'}">Details</option>
+                  <option value="member_id" th:selected="${searchItem == 'member_id'}">Seller</option>
+               </select>
+               <input type="text" name="searchWord" th:value="${searchWord}" placeholder="What are you looking for?">
+               <a th:href="@{/}" class="btn"><img th:src="@{/images/search2.png}" alt="검색" style="width:40px;">
+                  <input type="submit" class="btn" style="display: none;"></a>
+            </form>
+         </div>
+         <!-- end.search -->
+
+         <div class="member">
+				<!-- 인증이 안된 사람 -->
+				<a sec:authorize="not isAuthenticated()" th:href="@{/member/signin}" id="signin" class="btn">login</a>
+				<span sec:authorize="not isAuthenticated()">|</span>
+				<a sec:authorize="not isAuthenticated()" th:href="@{/member/signup}" id="signup" class="btn">signup</a>
+				
+				<a sec:authorize="isAuthenticated()" th:href="@{/logout}" id="logout" class="btn">logout</a>
+				<span sec:authorize="isAuthenticated()">|</span>
+				<a sec:authorize="isAuthenticated()" th:href="@{/member/cart}" id="cart" class="btn">cart</a>
+			</div><!-- end.member -->
+      </div><!-- end.header -->
+
+      <div class="middle">
+         <div class="category">
+            <ul>
+               <li style="font:NanumSquareNeoHeavy;font-weight:bolder;text-align:center;"><a href="#">
+                     ADMIN &nbsp;TASK</a></li>
+               <li class="c bidet"><a th:href="@{/admin/inquiry}" class="c">
+                     <img th:src="@{/images/inquiry.png}">Pending Inquiry</a></li>
+               <li class="c bidet"><a th:href="@{/admin/product}" class="c">
+                     <img th:src="@{/images/product.png}">Pending Product</a></li>
+               <li class="c"><a href="#" class="c">
+                     <img th:src="@{/images/dashboard.png}">Dashboard</a></li>
+               <li class="c"><a href="#" class="c">
+                     <img th:src="@{/images/member.png}">Member</a></li>      
+            </ul>
+         </div><!-- end.category -->
+
+         <div class="contents">
+            <!-- Carousel -->
+            <div id="demo" class="carousel slide" data-bs-ride="carousel">
+
+               <!-- Indicators/dots -->
+               <div class="carousel-indicators">
+                  <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+                  <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+                  <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+               </div>
+
+               <!-- The slideshow/carousel -->
+               <div class="carousel-inner">
+                  <div class="carousel-item active">
+                     <a href="#"><img th:src="@{/images/admin.png}" alt="bathroom1" class="bathroom"></a>
+                  </div>
+                  <div class="carousel-item">
+                     <a href="#"><img th:src="@{/images/admin2.png}" alt="bathroom2" class="bathroom"></a>
+                  </div>
+                  <div class="carousel-item">
+             		 <a href="#"><img th:src="@{/images/admin3.png}" alt="bathroom3" class="bathroom"></a>
+                  </div>
+               </div>
+
+               <!-- Left and right controls/icons -->
+               <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+               </button>
+               <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+               </button>
+            </div> <!-- end.carousel -->
+
+         </div><!-- end.contents -->
+      </div><!-- end.middle -->
+
+   </div><!-- end.container -->
+</body>
+
+</html>
