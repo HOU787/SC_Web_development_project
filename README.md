@@ -4,6 +4,9 @@ SpringBoot를 이용한 B2B E-Marketplace 웹 개발 프로젝트
 ## 프로젝트 소개
 비정상 이용자 분류 및 상품군별 감정분석 그래프를 제공하는 E-Marketplace를 구축하는 프로젝트 입니다.
 
+## 포트폴리오
+https://frequent-cloak-f0f.notion.site/B2B-E-Marketplace-0286fed6d34f46d2a5bb2c294fb296fb?pvs=74
+
 ## 개발기간
 23.06.19 ~ 23.07.16
 
